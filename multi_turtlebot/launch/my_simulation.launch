@@ -1,0 +1,41 @@
+<?xml version="1.0"?>
+<launch>
+  <param name="/use_sim_time" value="true" />
+<!-- Load existing map -->
+   <node name="map_server" pkg="map_server" type="map_server" args="$(find multi_turtlebot)/maps/playground.yaml" 
+respawn="false" > 
+ <param name="frame_id" value="/map" />
+  </node> 
+  <!-- start gazebo --> 
+ <include file="$(find gazebo_ros)/launch/empty_world.launch">
+    <arg name="world_name" value="$(find multi_turtlebot)/worlds/playground.world"/>
+    <arg name="paused" value="false"/>
+    <arg name="use_sim_time" value="true"/>
+    <arg name="gui" value="true"/>
+    <arg name="headless" value="false"/>
+    <arg name="debug" value="false"/>
+ </include>
+<!--origin: [-6.8999999999999915, -5.8999999999999915, 0.0]-->
+ <!-- Publish a static transformation between /odom and /map -->
+<node name="tf_1" pkg="tf" type="static_transform_publisher" args="3 3 0 0 0 0 /map /robot1/odom 100" />
+<node name="tf_2" pkg="tf" type="static_transform_publisher" args="3 4 0 0 0 0 /map /robot2/odom 100" />
+<node name="tf_3" pkg="tf" type="static_transform_publisher" args="3 5 0 0 0 0 /map /robot3/odom 100" />
+
+
+  <!-- include our robots -->
+  <include file="$(find multi_turtlebot)/launch/robots.launch"/>
+  <include file="$(find multi_turtlebot)/launch/start_demo.launch"/>
+<!-- Velocity muxer -->
+  <node pkg="nodelet" type="nodelet" name="mobile_base_nodelet_manager" args="manager"/>
+  <node pkg="nodelet" type="nodelet" name="cmd_vel_mux"
+        args="load yocs_cmd_vel_mux/CmdVelMuxNodelet mobile_base_nodelet_manager">
+    <param name="yaml_cfg_file" value="$(find turtlebot_bringup)/param/mux.yaml" />
+    <remap from="cmd_vel_mux/output" to="robot1/mobile_base/commands/velocity"/>
+  </node>
+<!--<arg name="rvizconfig" default="$(find multi_turtlebot)/navigation.rviz" />
+ <node name="rviz" pkg="rviz" type="rviz" args="-d $(arg rvizconfig)"  required="true">
+</node>-->
+
+</launch>
+
+

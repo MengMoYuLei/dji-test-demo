@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<launch>
+
+  <node pkg="multi_turtlebot" type="turtlebot1_frame_broadcaster"
+        name="broadcaster_frame"/>
+  <node pkg="multi_turtlebot" type="newturtlebot_location"
+        name="turtlebot_location" output="screen" />
+       
+</launch>
