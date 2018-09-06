@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<launch>
+
+<include file="$(find dji_sdk)/launch/sdk.launch" />
+<node pkg="dji_test_demo" type="dji_velcontrol" name="dji_velcontrol" output="screen"/>
+
+</launch>

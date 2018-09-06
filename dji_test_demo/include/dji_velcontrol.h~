@@ -1,0 +1,72 @@
+#ifndef DJI_VELCONTROL_H_
+#define DJI_VELCONTROL_H_
+
+//ros includes
+#include <ros/ros.h>
+#include <geometry_msgs/QuaternionStamped.h>
+#include <geometry_msgs/Vector3Stamped.h>
+#include <sensor_msgs/NavSatFix.h>
+#include <std_msgs/UInt8.h>
+
+#include <tf/tf.h>
+#include <sensor_msgs/Joy.h>
+
+//dji sdk includes
+#include <dji_sdk/DroneTaskControl.h>
+#include <dji_sdk/SDKControlAuthority.h>
+#include <dji_sdk/QueryDroneVersion.h>
+#include <dji_sdk/SetLocalPosRef.h>
+
+//eign includes
+#include <Eigen/Eigen>
+#include <Eigen/Dense>
+#include <Eigen/Geometry>
+#include <Eigen/Eigenvalues>
+
+//zed
+#include <sl/Camera.hpp>
+
+// OpenCV includes
+#include <opencv2/opencv.hpp>
+
+
+#define C_EARTH (double)6378137.0
+#define C_PI (double)3.141592653589793
+#define DEG2RAD(DEG) ((DEG) * ((C_PI) / (180.0)))
+const float deg2rad = C_PI/180.0;
+const float rad2deg = 180.0/C_PI;
+
+
+void fly_vel_control(double x_vel,double y_vel,double z_vel,double yaw_rate);
+void fly_pos_control(double target_offset_x,double target_offset_y,
+                     double target_offset_z,double target_yaw);
+
+void localOffsetFromGpsOffset(geometry_msgs::Vector3&  deltaNed,
+                         sensor_msgs::NavSatFix& target,
+                         sensor_msgs::NavSatFix& origin);
+
+geometry_msgs::Vector3 toEulerAngle(geometry_msgs::Quaternion quat);
+
+void flight_status_callback(const std_msgs::UInt8::ConstPtr& msg);
+
+void gps_callback(const sensor_msgs::NavSatFix::ConstPtr& msg);
+
+void attitude_callback(const geometry_msgs::QuaternionStamped::ConstPtr& msg);
+
+void local_position_callback(const geometry_msgs::PointStamped::ConstPtr& msg);
+
+void gps_health_callback(const std_msgs::UInt8::ConstPtr& msg);
+
+void velocity_callback(const geometry_msgs::Vector3Stamped::ConstPtr& msg);
+
+bool takeoff_land(int task);
+
+bool obtain_control();
+
+bool is_M100();
+
+bool M100monitoredTakeoff();
+
+bool set_local_position();
+
+#endif
